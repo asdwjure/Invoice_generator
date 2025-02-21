@@ -88,7 +88,15 @@ class InvoiceGUI(QWidget):
         # Invoice Options Group (Vertical Layout; language first)
         options_group = QGroupBox("Invoice Options")
         options_layout = QVBoxLayout()
-        # Language selection (first)
+        # Due date selection
+        due_date_layout = QHBoxLayout()
+        due_date_label = QLabel("Due date (days from now):")
+        self.due_date_edit = QLineEdit()
+        self.due_date_edit.setPlaceholderText("15")
+        self.due_date_edit.setMaximumWidth(50)
+        due_date_layout.addWidget(due_date_label)
+        due_date_layout.addWidget(self.due_date_edit)
+        # Language selection
         language_layout = QHBoxLayout()
         language_label = QLabel("Select language:")
         self.language_combo = QComboBox()
@@ -99,6 +107,7 @@ class InvoiceGUI(QWidget):
         self.include_vat_checkbox = QCheckBox("Include VAT")
         # Reverse charge note checkbox
         self.include_note_checkbox = QCheckBox("Include reverse charge note")
+        options_layout.addLayout(due_date_layout)
         options_layout.addLayout(language_layout)
         options_layout.addWidget(self.include_vat_checkbox)
         options_layout.addWidget(self.include_note_checkbox)
@@ -252,7 +261,7 @@ class InvoiceGUI(QWidget):
         
         invoice_number = get_next_invoice_number()
         issue_date = datetime.now().date()
-        due_date = issue_date + timedelta(days=15)
+        due_date = issue_date + timedelta(days=int(self.due_date_edit.text().strip() or 15))
         
         contractor_info = {
             "company_name": self.company_name_edit.text().strip(),
