@@ -1,2 +1,4 @@
 __pycache__/
 invoice_metadata.json
+clients.json
+*.pdf

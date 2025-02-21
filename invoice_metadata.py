@@ -20,11 +20,10 @@ def save_metadata(data):
 def get_next_invoice_number():
     current_year = datetime.now().year
     data = load_metadata()
-    # If year is different or no data exists, reset sequence (but keep saved info)
+    # Reset sequence if new year, but keep saved info
     if str(current_year) != data.get("year"):
         data["year"] = str(current_year)
         data["sequence"] = 0
-    # Increment sequence
     data["sequence"] = data.get("sequence", 0) + 1
     save_metadata(data)
     invoice_number = f"{current_year}-{data['sequence']:0{SEQUENCE_LENGTH}d}"
@@ -35,26 +34,42 @@ def load_last_items():
     return data.get("last_items", [])
 
 def save_last_items(items):
-    # 'items' is expected to be a list of InvoiceItem objects.
     data = load_metadata()
-    # Convert each invoice item to a dict
     last_items = [
-        {"description": item.description, "unit_price": item.unit_price, "quantity": item.quantity}
+        {
+            "description": item.description,
+            "unit_price": item.unit_price,
+            "quantity": item.quantity,
+            "vat_rate": item.vat_rate
+        }
         for item in items
     ]
     data["last_items"] = last_items
     save_metadata(data)
 
 def load_last_info():
-    """Load the last used contractor and client info."""
     data = load_metadata()
     contractor_info = data.get("contractor_info", {})
     client_info = data.get("client_info", {})
     return contractor_info, client_info
 
 def save_last_info(contractor_info, client_info):
-    """Save contractor and client info to metadata."""
     data = load_metadata()
     data["contractor_info"] = contractor_info
     data["client_info"] = client_info
+    save_metadata(data)
+
+def load_invoice_options():
+    data = load_metadata()
+    return {
+        "include_vat": data.get("include_vat", False),
+        "language": data.get("language", "English"),
+        "include_note": data.get("include_note", False)
+    }
+
+def save_invoice_options(include_vat, language, include_note):
+    data = load_metadata()
+    data["include_vat"] = include_vat
+    data["language"] = language
+    data["include_note"] = include_note
     save_metadata(data)
