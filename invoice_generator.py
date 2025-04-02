@@ -3,6 +3,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+import textwrap
 
 pdfmetrics.registerFont(TTFont('DejaVu', 'DejaVuSans.ttf'))
 pdfmetrics.registerFont(TTFont('DejaVu-Bold', 'DejaVuSans-Bold.ttf'))
@@ -86,20 +87,24 @@ def generate_invoice_pdf(invoice, include_vat, include_note):
     c.line(margin, y, width - margin, y)
     y -= 10
 
-    # List invoice items
+    # List invoice items with wrapped description
     for item in invoice.items:
-        c.drawString(margin, y, item.description)
-        if include_vat:
-            c.drawRightString(margin + 238, y, f"{item.unit_price:.2f}")
-            c.drawRightString(margin + 289, y, f"{item.quantity}")
-            c.drawRightString(margin + 338, y, f"{item.vat_rate:.2f}")
-            c.drawRightString(margin + 416, y, f"{item.vat_amount:.2f}")
-            c.drawRightString(width - margin, y, f"{item.total_gross:.2f}")
-        else:
-            c.drawRightString(margin + 330, y, f"{item.unit_price:.2f}")
-            c.drawRightString(margin + 400, y, f"{item.quantity}")
-            c.drawRightString(width - margin, y, f"{item.total_net:.2f}")
-        y -= 15
+        wrapped_desc = textwrap.wrap(item.description, width=25)
+        for i, line in enumerate(wrapped_desc):
+            c.drawString(margin, y, line)
+            # Only on the first line print the rest of the columns
+            if i == 0:
+                if include_vat:
+                    c.drawRightString(margin + 238, y, f"{item.unit_price:.2f}")
+                    c.drawRightString(margin + 289, y, f"{item.quantity}")
+                    c.drawRightString(margin + 338, y, f"{item.vat_rate:.2f}")
+                    c.drawRightString(margin + 416, y, f"{item.vat_amount:.2f}")
+                    c.drawRightString(width - margin, y, f"{item.total_gross:.2f}")
+                else:
+                    c.drawRightString(margin + 330, y, f"{item.unit_price:.2f}")
+                    c.drawRightString(margin + 400, y, f"{item.quantity}")
+                    c.drawRightString(width - margin, y, f"{item.total_net:.2f}")
+            y -= 15
 
     y -= 10
     c.line(margin, y, width - margin, y)
@@ -213,20 +218,23 @@ def generate_invoice_pdf_slovene(invoice, include_vat, include_note):
     c.line(margin, y, width - margin, y)
     y -= 13
 
-    # List invoice items
+    # List invoice items with wrapped description
     for item in invoice.items:
-        c.drawString(margin, y, item.description)
-        if include_vat:
-            c.drawRightString(margin + 222, y, f"{item.unit_price:.2f}".replace(".", ","))
-            c.drawRightString(margin + 275, y, f"{item.quantity}")
-            c.drawRightString(margin + 331, y, f"{item.vat_rate:.2f}".replace(".", ","))
-            c.drawRightString(margin + 400, y, f"{item.vat_amount:.2f}".replace(".", ","))
-            c.drawRightString(width - margin, y, f"{item.total_gross:.2f}".replace(".", ","))
-        else:
-            c.drawRightString(margin + 330, y, f"{item.unit_price:.2f}".replace(".", ","))
-            c.drawRightString(margin + 400, y, f"{item.quantity}")
-            c.drawRightString(width - margin, y, f"{item.total_net:.2f}".replace(".", ","))
-        y -= 15
+        wrapped_desc = textwrap.wrap(item.description, width=25)
+        for i, line in enumerate(wrapped_desc):
+            c.drawString(margin, y, line)
+            if i == 0:
+                if include_vat:
+                    c.drawRightString(margin + 222, y, f"{item.unit_price:.2f}".replace(".", ","))
+                    c.drawRightString(margin + 275, y, f"{item.quantity}")
+                    c.drawRightString(margin + 331, y, f"{item.vat_rate:.2f}".replace(".", ","))
+                    c.drawRightString(margin + 400, y, f"{item.vat_amount:.2f}".replace(".", ","))
+                    c.drawRightString(width - margin, y, f"{item.total_gross:.2f}".replace(".", ","))
+                else:
+                    c.drawRightString(margin + 330, y, f"{item.unit_price:.2f}".replace(".", ","))
+                    c.drawRightString(margin + 400, y, f"{item.quantity}")
+                    c.drawRightString(width - margin, y, f"{item.total_net:.2f}".replace(".", ","))
+            y -= 15
 
     y -= 10
     c.line(margin, y, width - margin, y)
@@ -262,3 +270,4 @@ def generate_invoice_pdf_slovene(invoice, include_vat, include_note):
 
     c.showPage()
     c.save()
+
