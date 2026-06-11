@@ -130,8 +130,9 @@ def generate_invoice_pdf(invoice, include_vat, include_note):
 
     if include_note:
         c.setFont("DejaVu", 9)
-        note = ["Note: VAT is not charged according to the Article 44 of the Directive ",
-                "EU 2006/112/ES – reverse charge (for recipient)."]
+        note = ["Note: VAT is not charged – supply of services outside the scope of Slovenian VAT",
+        " (Article 25 ZDDV-1, place of supply outside Slovenia)."
+        ]
         c.drawString(margin, y, note[0])
         y -= 11
         c.drawString(margin, y, note[1])

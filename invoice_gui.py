@@ -105,8 +105,8 @@ class InvoiceGUI(QWidget):
         language_layout.addWidget(self.language_combo)
         # Include VAT checkbox
         self.include_vat_checkbox = QCheckBox("Include VAT")
-        # Reverse charge note checkbox
-        self.include_note_checkbox = QCheckBox("Include reverse charge note")
+        # VAT note checkbox
+        self.include_note_checkbox = QCheckBox("Include VAT note")
         options_layout.addLayout(due_date_layout)
         options_layout.addLayout(language_layout)
         options_layout.addWidget(self.include_vat_checkbox)
